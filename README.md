@@ -1,6 +1,6 @@
 # go-laonumspeller
 
-[![Go Version](https://img.shields.io/badge/go-%3E%3D1.21-blue)](https://go.dev/)
+[![Go Version](https://img.shields.io/badge/go-%3E%3D1.25-blue)](https://go.dev/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 ແປງຕົວເລກເປັນພາສາລາວ ແລະ ແປງຄຳພາສາລາວກັບຄືນເປັນຕົວເລກ
