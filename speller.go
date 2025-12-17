@@ -51,6 +51,7 @@ func IntToWordsLA(n int64) string {
 		return "ສູນ"
 	}
 
+	// ລ້ານລ້ານ (Trillion - 10^12)
 	if n >= 1000000000000 {
 		trillions := n / 1000000000000
 		remainder := n % 1000000000000
@@ -61,6 +62,7 @@ func IntToWordsLA(n int64) string {
 		return result
 	}
 
+	// ຕື້ (Billion - 10^9)
 	if n >= 1000000000 {
 		billions := n / 1000000000
 		remainder := n % 1000000000
@@ -72,6 +74,7 @@ func IntToWordsLA(n int64) string {
 		return result
 	}
 
+	// ລ້ານ (Million - 10^6)
 	if n >= 1000000 {
 		millions := n / 1000000
 		remainder := n % 1000000
@@ -83,6 +86,24 @@ func IntToWordsLA(n int64) string {
 		return result
 	}
 
+	// ແສນ (Hundred Thousand - 10^5)
+	if n >= 100000 {
+		hundredThousands := n / 100000
+		remainder := n % 100000
+		hundredThousandPart := ""
+		if hundredThousands == 1 {
+			hundredThousandPart = "ໜຶ່ງແສນ"
+		} else {
+			hundredThousandPart = convertSmallInt(hundredThousands) + "ແສນ"
+		}
+		result := hundredThousandPart
+		if remainder > 0 {
+			result += IntToWordsLA(remainder)
+		}
+		return result
+	}
+
+	// ພັນ (Thousand - 10^3)
 	if n >= 1000 {
 		thousands := n / 1000
 		remainder := n % 1000
@@ -97,7 +118,7 @@ func IntToWordsLA(n int64) string {
 	return convertSmallInt(n)
 }
 
-// Internal helper for segments (Millions, Billions, etc.)
+// formatSegment formats number segments (for ພັນ, ລ້ານ, ຕື້)
 func formatSegment(val int64, unit string) string {
 	if val < 10 {
 		if val == 1 && unit == "ພັນ" {
@@ -108,8 +129,12 @@ func formatSegment(val int64, unit string) string {
 	return convertSmallInt(val) + unit
 }
 
-// Internal helper for numbers under 1000
+// convertSmallInt converts numbers under 1000 to Lao words
 func convertSmallInt(n int64) string {
+	if n == 0 {
+		return ""
+	}
+
 	s := strconv.FormatInt(n, 10)
 	numtext := []string{"", "ໜຶ່ງ", "ສອງ", "ສາມ", "ສີ່", "ຫ້າ", "ຫົກ", "ເຈັດ", "ແປດ", "ເກົ້າ"}
 	var res strings.Builder
@@ -118,11 +143,16 @@ func convertSmallInt(n int64) string {
 	for i := 0; i < len(s); i++ {
 		val := int(s[i] - '0')
 		pos := len(s) - i - 1
+
 		if val > 0 {
 			switch pos {
-			case 2:
-				res.WriteString(numtext[val] + "ຮ້ອຍ")
-			case 1:
+			case 2: // ຮ້ອຍ
+				if val == 1 {
+					res.WriteString("ໜຶ່ງຮ້ອຍ")
+				} else {
+					res.WriteString(numtext[val] + "ຮ້ອຍ")
+				}
+			case 1: // ສິບ
 				switch val {
 				case 1:
 					res.WriteString("ສິບ")
@@ -132,7 +162,7 @@ func convertSmallInt(n int64) string {
 					res.WriteString(numtext[val] + "ສິບ")
 				}
 				et = true
-			case 0:
+			case 0: // ຫົວໜ່ວຍ
 				if et && val == 1 {
 					res.WriteString("ເອັດ")
 				} else {
@@ -182,7 +212,13 @@ func WordsToNumberLA(words string) (float64, error) {
 	return result, nil
 }
 
+// wordsToIntLA converts Lao words to an integer
 func wordsToIntLA(words string) (int64, error) {
+	words = strings.TrimSpace(words)
+	if words == "" || words == "ສູນ" {
+		return 0, nil
+	}
+
 	numMap := map[string]int64{
 		"ໜຶ່ງ": 1, "ສອງ": 2, "ສາມ": 3, "ສີ່": 4, "ຫ້າ": 5,
 		"ຫົກ": 6, "ເຈັດ": 7, "ແປດ": 8, "ເກົ້າ": 9,
@@ -194,6 +230,7 @@ func wordsToIntLA(words string) (int64, error) {
 
 	var total, current int64
 	runes := []rune(words)
+
 	for i := 0; i < len(runes); {
 		matched := false
 		for length := 10; length >= 1; length-- {
@@ -215,6 +252,8 @@ func wordsToIntLA(words string) (int64, error) {
 							current = 1
 						}
 						current *= val
+					} else if val == 10 || val == 20 {
+						current += val
 					} else {
 						current += val
 					}

@@ -28,7 +28,7 @@ Convert numbers to Lao words and vice versa.
 
 ### CLI Tool
 ```bash
-go install github.com/xarhang/go-laonumspeller@latest
+go install github.com/xarhang/go-laonumspeller/cmd/laonumspell@latest
 ```
 
 ### Library
@@ -40,38 +40,40 @@ go get github.com/xarhang/go-laonumspeller
 
 ### ແປງຕົວເລກເປັນຄຳ / Convert Number to Words
 ```bash
-go-laonumspeller 123
+laonumspell 123
 # Output: ໜຶ່ງຮ້ອຍຊາວສາມ
 
-go-laonumspeller 123.45
+laonumspell 123.45
 # Output: ໜຶ່ງຮ້ອຍຊາວສາມຈຸດສີ່ສິບຫ້າ
 
-go-laonumspeller -50
+laonumspell -50
 # Output: ລົບຫ້າສິບ
 
-go-laonumspeller 100000
+laonumspell 100000
 # Output: ໜຶ່ງແສນ
 
-go-laonumspeller 1000000
+laonumspell 1000000
 # Output: ໜຶ່ງລ້ານ
 ```
 
 ### ແປງຄຳເປັນຕົວເລກ / Convert Words to Number
 ```bash
-go-laonumspeller -r "ໜຶ່ງຮ້ອຍຊາວສາມ"
+laonumspell -r "ໜຶ່ງຮ້ອຍຊາວສາມ"
 # Output: 123
 
-go-laonumspeller -r "ໜຶ່ງແສນ"
+laonumspell -r "ໜຶ່ງແສນ"
 # Output: 100000
 
-go-laonumspeller -r "ສິບລ້ານ"
+laonumspell -r "ສິບລ້ານ"
 # Output: 10000000
 ```
 
 ### ຄຳສັ່ງອື່ນໆ / Other Commands
 ```bash
-go-laonumspeller -h          # ສະແດງຄຳແນະນຳ / Show help
-go-laonumspeller --help      # ສະແດງຄຳແນະນຳ / Show help
+laonumspell -h          # ສະແດງຄຳແນະນຳ / Show help
+laonumspell --help      # ສະແດງຄຳແນະນຳ / Show help
+laonumspell -v          # ສະແດງເວີຊັນ / Show version
+laonumspell --version   # ສະແດງເວີຊັນ / Show version
 ```
 
 ## 💻 ການໃຊ້ງານເປັນ Library / Library Usage
@@ -82,50 +84,96 @@ package main
 import (
     "fmt"
     "log"
+    
+    "github.com/xarhang/go-laonumspeller"
 )
 
-// Import functions directly from main package
-// (Functions are in main.go: numberToWordsLA, wordsToNumberLA)
-
 func main() {
-    // Note: This package is primarily designed as a CLI tool.
-    // For library usage, you can copy the conversion functions
-    // from main.go into your own package.
+    // ແປງຕົວເລກເປັນຄຳ / Number to Words
+    result, err := laonumspeller.NumberToWordsLA(123.45)
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(result)
+    // Output: ໜຶ່ງຮ້ອຍຊາວສາມຈຸດສີ່ສິບຫ້າ
     
-    // Example of what the functions do:
-    // numberToWordsLA(123.45) -> "ໜຶ່ງຮ້ອຍຊາວສາມຈຸດສີ່ສິບຫ້າ"
-    // wordsToNumberLA("ໜຶ່ງຮ້ອຍຊາວສາມ") -> 123.0
+    // ແປງຄຳເປັນຕົວເລກ / Words to Number
+    num, err := laonumspeller.WordsToNumberLA("ໜຶ່ງແສນ")
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(num)
+    // Output: 100000
+    
+    // ໃຊ້ງານກັບຕົວເລກຂະໜາດໃຫຍ່
+    words, _ := laonumspeller.NumberToWordsLA(1000000000)
+    fmt.Println(words) // Output: ໜຶ່ງຕື້
+    
+    // ແປງຕົວເລກລົບ
+    negative, _ := laonumspeller.NumberToWordsLA(-50.5)
+    fmt.Println(negative) // Output: ລົບຫ້າສິບຈຸດຫ້າ
 }
 ```
+
+### API Reference
+
+#### `NumberToWordsLA(num float64) (string, error)`
+ແປງຕົວເລກເປັນຄຳພາສາລາວ
+
+**Parameters:**
+- `num`: ຕົວເລກທີ່ຕ້ອງການແປງ (ຮອງຮັບທົດສະນິຍົມ ແລະ ເລກລົບ)
+
+**Returns:**
+- `string`: ຄຳພາສາລາວ
+- `error`: ຂໍ້ຜິດພາດ (ຖ້າມີ)
+
+#### `WordsToNumberLA(words string) (float64, error)`
+ແປງຄຳພາສາລາວເປັນຕົວເລກ
+
+**Parameters:**
+- `words`: ຄຳພາສາລາວທີ່ຕ້ອງການແປງ
+
+**Returns:**
+- `float64`: ຕົວເລກ
+- `error`: ຂໍ້ຜິດພາດ (ຖ້າມີ)
+
+#### `IntToWordsLA(n int64) string`
+ແປງຈຳນວນເຕັມເປັນຄຳພາສາລາວ (exported function ສຳລັບການໃຊ້ພິເສດ)
+
+**Parameters:**
+- `n`: ຈຳນວນເຕັມ
+
+**Returns:**
+- `string`: ຄຳພາສາລາວ
 
 ## 📊 ຕົວຢ່າງຕົວເລກຂະໜາດໃຫຍ່ / Large Number Examples
 
 ```bash
 # ພັນ (Thousand - 10³)
-go-laonumspeller 1000           # ໜຶ່ງພັນ
-go-laonumspeller 10000          # ສິບພັນ
-go-laonumspeller 20000          # ຊາວພັນ
-go-laonumspeller 35000          # ສາມສິບຫ້າພັນ
+laonumspell 1000           # ໜຶ່ງພັນ
+laonumspell 10000          # ສິບພັນ
+laonumspell 20000          # ຊາວພັນ
+laonumspell 35000          # ສາມສິບຫ້າພັນ
 
 # ແສນ (Hundred Thousand - 10⁵)
-go-laonumspeller 100000         # ໜຶ່ງແສນ
-go-laonumspeller 500000         # ຫ້າແສນ
-go-laonumspeller 150000         # ໜຶ່ງແສນຫ້າສິບພັນ
+laonumspell 100000         # ໜຶ່ງແສນ
+laonumspell 500000         # ຫ້າແສນ
+laonumspell 150000         # ໜຶ່ງແສນຫ້າສິບພັນ
 
 # ລ້ານ (Million - 10⁶)
-go-laonumspeller 1000000        # ໜຶ່ງລ້ານ
-go-laonumspeller 10000000       # ສິບລ້ານ
-go-laonumspeller 20000000       # ຊາວລ້ານ
-go-laonumspeller 100000000      # ໜຶ່ງຮ້ອຍລ້ານ
+laonumspell 1000000        # ໜຶ່ງລ້ານ
+laonumspell 10000000       # ສິບລ້ານ
+laonumspell 20000000       # ຊາວລ້ານ
+laonumspell 100000000      # ໜຶ່ງຮ້ອຍລ້ານ
 
 # ຕື້ (Billion - 10⁹)
-go-laonumspeller 1000000000     # ໜຶ່ງຕື້
-go-laonumspeller 10000000000    # ສິບຕື້
-go-laonumspeller 20000000000    # ຊາວຕື້
-go-laonumspeller 100000000000   # ໜຶ່ງຮ້ອຍຕື້
+laonumspell 1000000000     # ໜຶ່ງຕື້
+laonumspell 10000000000    # ສິບຕື້
+laonumspell 20000000000    # ຊາວຕື້
+laonumspell 100000000000   # ໜຶ່ງຮ້ອຍຕື້
 
 # ລ້ານລ້ານ (Trillion - 10¹²)
-go-laonumspeller 1000000000000  # ໜຶ່ງລ້ານລ້ານ
+laonumspell 1000000000000  # ໜຶ່ງລ້ານລ້ານ
 ```
 
 ## 🔢 ຕາຕະລາງຫົວໜ່ວຍ / Unit Reference Table
@@ -149,10 +197,13 @@ go-laonumspeller 1000000000000  # ໜຶ່ງລ້ານລ້ານ
 
 ```
 go-laonumspeller/
-├── go.mod              # Go module definition
-├── main.go             # CLI tool & conversion functions
-├── LICENSE             # Apache 2.0 License
-└── README.md           # Documentation
+├── go.mod                    # Go module definition
+├── speller.go                # Main library (package laonumspeller)
+├── cmd/
+│   └── laonumspell/
+│       └── main.go           # CLI tool
+├── LICENSE                   # Apache 2.0 License
+└── README.md                 # Documentation
 ```
 
 ## 🛠️ Development
@@ -163,30 +214,36 @@ go-laonumspeller/
 git clone https://github.com/xarhang/go-laonumspeller.git
 cd go-laonumspeller
 
-# Run directly
-go run main.go 123.45
-go run main.go -r "ໜຶ່ງຮ້ອຍຊາວສາມ"
+# Run CLI directly
+go run cmd/laonumspell/main.go 123.45
+go run cmd/laonumspell/main.go -r "ໜຶ່ງຮ້ອຍຊາວສາມ"
 
-# Build
-go build -o go-laonumspeller
+# Build CLI
+go build -o laonumspell cmd/laonumspell/main.go
 
 # Run built binary
-./go-laonumspeller 999999
+./laonumspell 999999
+
+# Test as library
+go test -v
 ```
 
 ### ສ້າງ Release / Build Release
 ```bash
-# For current platform
-go build -o go-laonumspeller
+# Build CLI for current platform
+go build -o laonumspell cmd/laonumspell/main.go
 
 # For Linux
-GOOS=linux GOARCH=amd64 go build -o go-laonumspeller-linux
+GOOS=linux GOARCH=amd64 go build -o laonumspell-linux cmd/laonumspell/main.go
 
 # For Windows
-GOOS=windows GOARCH=amd64 go build -o go-laonumspeller.exe
+GOOS=windows GOARCH=amd64 go build -o laonumspell.exe cmd/laonumspell/main.go
 
-# For macOS
-GOOS=darwin GOARCH=amd64 go build -o go-laonumspeller-macos
+# For macOS (Intel)
+GOOS=darwin GOARCH=amd64 go build -o laonumspell-macos-amd64 cmd/laonumspell/main.go
+
+# For macOS (Apple Silicon)
+GOOS=darwin GOARCH=arm64 go build -o laonumspell-macos-arm64 cmd/laonumspell/main.go
 ```
 
 ## 🤝 Contributing
